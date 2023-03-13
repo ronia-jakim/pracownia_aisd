@@ -32,49 +32,20 @@ int main () {
     ll left = 0;
     ll right = 0;
 
-    ll traveled = dst[0];
+    ll traveled = 0;//dst[0];
     ll ret = traveled;
 
-    while (right < n) {
-        // robie nowy krok
-        right++;
-        // jezeli ten krok nie przebil mnie przez total/2, czyli odpowiada za dlugosc sciezki
-        if (traveled + dst[right] < total/2) {
+    while (left < n-1) {
+        //dopóki mi to poprawia sytuację, to robię krok:
+        while (min(traveled, total-traveled) < min(traveled+dst[right], total-traveled-dst[right])) {
             traveled += dst[right];
-            if (ret < min(traveled, total-traveled)) {
-                ret = min(traveled, total-traveled);
-                cout << ret << " " << traveled << " " << right << " " << left << "dd\n";
-            }
+            right++;
         }
-        else {
-            // jezeli dostaje dluzsza droge po zrobieniu go ale zaczynajac od wierzcholka bardziej na prawo
-            ll pom = traveled + dst[right] - dst[left];
-            if (pom < total/2 && pom > traveled) {
-                traveled = pom;
-                left++;
-                if (ret < min(traveled, total-traveled)) {
-                    ret = min(traveled, total-traveled);
-                    cout << ret << "ddd\n";
-                }
-            }
-            else {
-                // juz bardziej wydluzyc sie nie da, chyba, ze przekraczajac total/2
-                cout << traveled << " " << total-((traveled)+dst[right]) << " pp " << total-pom << " " << total << endl;
-
-                // potencjalna odpowiedz to traveled lub total-(traveled+dst[right])
-                //ret = min(traveled, total - (traveled+dst[right]));
-                ret = max(min(traveled, total - traveled), min(total - (traveled+dst[right]), traveled+dst[right]));
-
-                //podwijam spodnice sciezki?
-                traveled += dst[right];
-                while(traveled > total/2) {
-                    traveled -= dst[left];
-                    left++;
-                }
-                cout << left << " " << right << " ll " << ret << endl;
-            }
-        }
+        ret = max(ret, min(traveled, total-traveled));
+        traveled -= dst[left];
+        left++;
     }
-    cout << ret << endl;
+    
+    cout << ret << "\n";
     return 0;
 }
