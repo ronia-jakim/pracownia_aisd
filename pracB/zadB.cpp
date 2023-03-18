@@ -11,12 +11,22 @@ using namespace std;
 
 ll w, k;
 
-vector<ll> PLANSZA [10001];
 
-std::ios::sync_with_stdio(false)
+vector<ll> DUPEK [13];
 
 
 int main () {
+    // std::ios::sync_with_stdio(false);
+    // cin.tie(NULL);
+        
     cin >> w >> k;
+
     return 0;
 }
+
+
+
+
+
+
+

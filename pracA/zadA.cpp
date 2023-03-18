@@ -7,6 +7,9 @@ using namespace std;
 #define M 1000001
 
 int main () {
+    std::ios::sync_with_stdio(false);
+    cin.tie(NULL);
+
     ll n;
     vector<ll> dst;
     ll total = 0;
