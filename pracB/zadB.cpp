@@ -13,7 +13,7 @@ int w, k;
 
 int potega[10];
 
-ll DUPEK [13][10000][2];
+ll DUPEK [18][10000][2];
 
 
 int main () {
@@ -33,62 +33,30 @@ int main () {
             char g;
             cin >> g;
             pom = int(g) - 48;
-                DUPEK[13][j][1] = potega[pom];
-            //cout << pom << " " << g << " \n";
-            ll dd = 0;
-            // z gory skacze na to co jestem
-            int orgia = 0;
-            if (i > 0) {
-                if (j > 1) {
-                    dd = DUPEK[12][j-2][0];
-                    orgia = -2;
-                }
-                if (j < k-2) {
-                    //dd = max(DUPEK[12][j+2], dd);
-                    if (dd < DUPEK[12][j+2][0]) {
-                        orgia = 2;
-                        dd = DUPEK[12][j+2][0];
-                    }
-                }
-            }
-            if (i > 1) {
-                if (j > 0) {
-                    if (dd < DUPEK[11][j-1][0]) {
-                        dd = DUPEK[11][j-1][0];
-                        orgia = -1;
-                    }
-                }
-                if (j < k-1) {
-                    if (dd < DUPEK[11][j+1][0]) {
-                        dd = DUPEK[11][j+1][0];
-                        orgia = 1;
-                    }
-                }
-            }
-            DUPEK[13][j][0] = dd + potega[pom];
 
-            // skacze do gory i wracam :3
-            ll t = DUPEK[13][j][0];
-            if (i > 0) {
-                if (j > 1 && orgia != -2) DUPEK[12][j-2][0] = max(t+DUPEK[12][j-2][1], DUPEK[12][j-2][0]);
-                if (j < k-2 && orgia != 2) DUPEK[12][j+2][0] = max(t+DUPEK[12][j+2][1], DUPEK[12][j+2][0]);
-            }
-            if (i > 1) {
-                if (j > 0 && orgia != -1) DUPEK[11][j-1][0] = max(t+DUPEK[12][j-1][1], DUPEK[12][j-1][0]);
-                if (j < k-1 && orgia != 1) DUPEK[11][j+1][0] = max(t+DUPEK[12][j+1][1], DUPEK[12][j+1][0]);
-            }
+            DUPEK[5][j] += potega[pom];
+
+            if (j > 0) DUPEK[7][j-1][0] = max(DUPEK[7][j-1][0], DUPEK[5][j]);
+            if (j > 1) DUPEK[6][j-2][0] = max(DUPEK[6][j-2][0], DUPEK[5][j]);
+            if (j < k-1) DUPEK[7][j+1] = max(DUPEK[7][j+1], DUPEK[5][j]);
+            if (j < k-2) DUPEK[6][j+2] = max(DUPEK[6][j+2], DUPEK[5][j]);
+
+            if (j < k-2) DUPEK[5][j+2] = max(DUPEK[5][j+2], DUPEK[5][j] + DUPEK[3][j+1]);
+            if (j < k-5) DUPEK[5][j+4] = max(DUPEK[5][j] + DUPEK[4][j+2], DUPEK[5][j+4]);
+            if (j < k-4) DUPEK[6][j+3] = max(DUPEK[5][j] + DUPEK[4][j+2], DUPEK[6][j+3]);
+            if (j < k-3) DUPEK[6][j+1] = max(DUPEK[5][j] + DUPEK[4][j+2], DUPEK[6][j+1]);
+            if (j > 1) DUPEK[6][j-1] = max(DUPEK[5][j] + DUPEK[4][j-2], DUPEK[6][j-1]);
+            if (j > 2) DUPEK[6][j-3] = max(DUPEK[5][j] + DUPEK[4][j-2], DUPEK[6][j-2]);
+
         }
         for (int j = 0; j < k; j++) {
-            DUPEK[11][j][0] = DUPEK[12][j][0];
-            DUPEK[11][j][1] = DUPEK[12][j][1];
-            DUPEK[12][j][0] = DUPEK[13][j][0];
-            DUPEK[12][j][1] = DUPEK[13][j][1];
+            for (int l = 0; l < 8; l++) DUPEK[l][j] = DUPEK[l+1][j];
         }
     }
 
     ll ret = 0;
     for (int i = 0; i < k; i++) {
-        if (ret < DUPEK[13][i][0]) ret = DUPEK[13][i][0];
+        if (ret < DUPEK[4][i]) ret = DUPEK[4][i];
     }
 
     cout << ret << "\n";
