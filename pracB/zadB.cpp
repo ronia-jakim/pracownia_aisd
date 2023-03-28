@@ -49,7 +49,6 @@ int main () {
 
             
             DUPEK[5][j] += POT[5][j];
-            if (k != 3 || i % 2 != 1){
             if (j > 1 && j < k-2) {
                 DUPEK[4][j-2] = max(DUPEK[5][j] + POT[4][j-2], DUPEK[4][j-2]);
                 DUPEK[4][j+2] = max(DUPEK[5][j] + POT[4][j+2], DUPEK[4][j+2]);
@@ -59,7 +58,6 @@ int main () {
             }
             else if (j > 1 && j >= k-2) {
                 DUPEK[4][j-2] = max(DUPEK[5][j] + POT[4][j-2], DUPEK[4][j-2]);
-            }
             }
             }
         }
