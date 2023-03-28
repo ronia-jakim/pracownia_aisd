@@ -43,13 +43,14 @@ do
 	echo "Found ${countt[i]} in $gr"
 	for j in $(seq 1 ${countt[i]})
 	do
-		echo "Test $gr/in/$j.in"
-		/usr/bin/time -f "  Time: %E" ./prog < $gr/in/$j.in > TT
+#		echo "Test $gr/in/$j.in"
+		#/usr/bin/time -f "  Time: %E" ./prog < $gr/in/$j.in > TT
+		./prog < $gr/in/$j.in > TT
 		if cmp TT $gr/out/$j.out; then
-			echo "  OK"
+#			echo "  OK"
 			((passed[i]++))
 		else
-			echo "  WA"
+			echo "  WA $j"
 		fi
 	done
 done
