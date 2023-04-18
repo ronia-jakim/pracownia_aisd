@@ -10,8 +10,10 @@ int n, m, k;
 
 const int S = 1e5;
 const ll MAX = 1e9+9;
+const int bit14 = 16383 << 17;
+const int bit17 = 131071;// << 14;
 
-vector<pair<int, int>> drogi[S];
+vector<int> drogi[S];
 //int drogi[S][S];
 //int docelowe[S];
 //
@@ -31,9 +33,14 @@ void debug();
 void swappp(int a, int b);
 void bring_order(int pos);
 
+int code(int index, int dst);
+int decode(int v);
+
 int main () {
     std::ios::sync_with_stdio(false);
     cin.tie(NULL);
+
+    //cout << "DUPA: " << bit14 << " " << bit17 << "\n";
     
     kolejka_size = 0;
 
@@ -50,64 +57,11 @@ int main () {
         cin >> a >> b >> d;
         a--;
         b--;
-
-        /*if(!bylo[a][b]) {
-            drogi[min(a, b)].push_back(make_pair(max(a, b), d));
-            drogi[max(a, b)].push_back(make_pair(min(a, b), d));
-            bylo[a][b] = true;
-            bylo[b][a] = true;
-        }
-        else {
-            for (int i = 0; i < drogi[min(a, b)].size(); i++) {
-                if (drogi[min(a, b)][i].first == max(a, b)) drogi[min(a, b)][i].second = min(d, drogi[min(a, b)][i].second);
-            }
-        }*/
-
-        //int p = max(a, b);
-        //a = min(a, b);
-        //b = p;
-        //
-        /*if (a > b) {
-            int p = b;
-            b = a;
-            a = p;
-        }
-
         
-        int wstaw = 1;
-        for(int j = 0; j < drogi[a].size(); j++) {
-            if (drogi[a][j].first == b) {
-                wstaw = 0;
-                drogi[a][j].second = min(drogi[a][j].second, d);
-                break;
-            }
-        }
-        if (wstaw) {
-            drogi[a].push_back(make_pair(b, d));
-            drogi[b].push_back(make_pair(a, d));
-        }*/
-        drogi[a].push_back(make_pair(b, d));
-        drogi[b].push_back(make_pair(a, d));
-        /*if (drogi[a][b] != 0) {
-            drogi[a][b] = min(drogi[a][b], d);
-            drogi[b][a] = min(drogi[a][b], d);
-        }
-        else {
-            drogi[a][b] = d;
-            drogi[b][a] = d;
-        }*/
-        /*auto ita = find_if(drogi[a].begin(), drogi[a].end(), [&b](const pair<int, int>& elem) {return elem.first == b;});
-        if (ita == drogi[a].end()) {
-            drogi[a].push_back(make_pair(b, d));
-            drogi[b].push_back(make_pair(a, d));
-        }
-        else {
-            if (ita->second > d) {
-                auto itb = find_if(drogi[b].begin(), drogi[b].end(), [&a](const pair<int, int>& elem) {return elem.first == a;});
-                ita->second = d;
-                itb->second = d;
-            }
-        }*/
+        drogi[a].push_back(code(b, d));
+        drogi[b].push_back(code(a, d));
+        //drogi[a].push_back(make_pair(b, d));
+        //drogi[b].push_back(make_pair(a, d));
     }
 
     /*for (int i = 0; i < k; i++) {
@@ -132,8 +86,10 @@ int main () {
         //debug();
 
         for (int i = 0; i < drogi[u].size(); i++) {
-            int v = drogi[u][i].first;
-            ll alt = odleglosc[u] + drogi[u][i].second;
+            int v = drogi[u][i] & bit17;
+            //drogi[u][i].first;
+            ll alt = odleglosc[u] + decode(drogi[u][i]);
+            //drogi[u][i].second;
             if (alt < odleglosc[v]) {
                 odleglosc[v] = alt;
                 //cout << "--- " << v << " " << dupa[v] << "---\n";
@@ -252,4 +208,11 @@ void swappp (int a, int b) {
 
     //dupa[kolejka[a]] = b;
     //dupa[kolejka[b]] = a;
+}
+
+int decode (int v) {
+    return ((v & bit14) >> 17);
+}
+int code (int index, int dst) {
+    return ((index & bit17) | ((dst << 17) & bit14));
 }
