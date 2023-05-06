@@ -10,8 +10,6 @@ struct drzewo {
   drzewo * lewy;
   drzewo * prawy;
 
-  drzewo * korzen;
-
   bool kolor;
 };
 
@@ -22,39 +20,46 @@ void lewa_rotacja (drzewo * t);
 void prawa_rotacja (drzewo * t);
 
 void insert(ll x);
-drzewo * insert_tree (ll x, drzewo * t, drzewo * p);
 void insert_repair (drzewo * t);
 
+void debug(drzewo * d);
+
 drzewo DUPA; // zawsze ma na poczatku 0 :<
+int n;
 
 int main() {
-  DUPA.korzen = &DUPA;
   DUPA.rodzic = nullptr;
   DUPA.lewy = nullptr;
   DUPA.prawy = nullptr;
 
-  /*DUPA = *(insert(2, &DUPA, nullptr));
-  cout << "AAA\n";
-  //DUPA = *DUPA.prawy;
+  cin >> n;
 
-  DUPA = *(insert(8, &DUPA, nullptr));
-  cout << "cos\n";
-  DUPA = *(insert(1, &DUPA, nullptr));
-  DUPA = *(insert(9, &DUPA, nullptr));
-  DUPA = *(insert(2, &DUPA, nullptr));
+  while (n > 0) {
+    char c;
+    ll x;
+    cin >> c;
+    cin >> x;
 
-  cout << DUPA.prawy->value << DUPA.prawy->kolor << "\n";
-  cout << DUPA.prawy->lewy->value << DUPA.prawy->lewy->kolor << " " << DUPA.prawy->prawy->value << DUPA.prawy->prawy->kolor << "\n";
-  cout << DUPA.prawy->prawy->prawy->value << DUPA.prawy->prawy->prawy->kolor << " \n";
-  */
+    if (c == 'I') {
+      insert(x);
+    }
+    else if (c == 'D') {
+      cout << "CHWILOWO BRAK\n";
+    }
+    else if (c == 'L') cout << womwuz (x, &DUPA, "BRAK");
+    else if (c == 'U') cout << gorka (x, &DUPA, "BRAK");
 
-  insert(6);
-  insert(2);
-  insert(8);
-  insert(9);
-  insert(1);
+    if (c != 'I') cout << "\n";
+    n--;
+  }
+}
 
-  cout << DUPA.value << " \n" << DUPA.prawy->value << "n" << DUPA.prawy->kolor << "\n";
+void debug (drzewo * d) {
+  if (d != NULL) {
+    debug(d->lewy);
+    cout << d->value << " ";
+    debug(d->prawy);
+  }
 }
 
 string gorka (ll x, drzewo * t, string ret) {
@@ -76,45 +81,51 @@ string womwuz (ll x, drzewo * t, string ret) {
 
   if (x == t->value) return to_string(x);
 
-  if (x > t->value) return womwuz(x, t->lewy, to_string(t->value));
+  if (x < t->value) return womwuz(x, t->lewy, ret);
 
-  // if x < t->value
-  return womwuz(x, t->prawy, ret);
+  // x > t->value
+  return womwuz(x, t->prawy, to_string(t->value));
 }
 
 void insert (ll x) {
-  drzewo * temp = insert_tree(x, &DUPA, nullptr);
+  //cout << "KURWA COS?\n";
+  drzewo * temp = &DUPA;
+  drzewo * prev = nullptr;
 
-  if (temp == NULL) return;
+  int l = 1;
 
-  insert_repair(temp);
+  while (temp != NULL) {
+    //cout << "ODWIEDZAM " << temp->value << " ";
+
+    if (temp->value == x) return;
+
+    prev = temp;
+    
+    if (temp->value > x) {
+      temp = temp->lewy;
+      l = 1;
+    }
+    else {
+      temp = temp->prawy;
+      l = 0;
+    }
+  }
+
+  //cout << endl;
+
+  drzewo * lisc = new drzewo;
+  lisc->value = x;
+  lisc->lewy = nullptr;
+  lisc->prawy = nullptr;
+  lisc->kolor = true;
+  lisc->rodzic = prev;
+  
+  if (l == 1) prev->lewy = lisc;
+  else prev->prawy = lisc;
+
+  insert_repair(lisc);
 }
-
-drzewo * insert_tree (ll x, drzewo * t, drzewo * p) {
-  if (t == NULL) {
-    t = new drzewo;
-    t->rodzic = p;
-    t->value = x;
-    t->prawy = NULL;
-    t->lewy = NULL;
-    t->kolor = true;
-    t->korzen = p->korzen;
-    return t;
-  }
-  if (t->value == x) return nullptr;
-    //return t;
-
-  if (t->value < x) {
-    //t->prawy = insert(x, t->prawy, t);
-    return insert_tree(x, t->prawy, t);
-  }
-  else {
-    //t->lewy = insert(x, t->lewy, t);
-    return insert_tree(x, t->lewy, t);
-  }
-  //return t;
-}
-
+  
 void lewa_rotacja (drzewo * t) {
   drzewo * pom = t->prawy;
   t->prawy = pom->lewy;
@@ -123,12 +134,12 @@ void lewa_rotacja (drzewo * t) {
     pom->lewy->rodzic = t;
   }
   pom->rodzic = t->rodzic;
-  if (t->rodzic != NULL) {
-    if (t == t->rodzic->lewy) t->rodzic->lewy = pom;
-    else t->rodzic->prawy = pom;
-    pom->lewy = t;
-    t->rodzic = pom;
-  }
+
+  if (t->rodzic == NULL) DUPA = *pom;
+  else if (t == t->rodzic->lewy) t->rodzic->lewy = pom;
+  else t->rodzic->prawy = pom;
+  pom->lewy = t;
+  t->rodzic = pom;
 }
 
 void prawa_rotacja (drzewo * t) {
@@ -139,69 +150,71 @@ void prawa_rotacja (drzewo * t) {
     pom->prawy->rodzic = t;
   }
   pom->rodzic = t->rodzic;
-  if (t->rodzic != NULL) {
-    if (t == t->rodzic->prawy) t->rodzic->prawy = pom;
-    else t->rodzic->lewy = pom;
-    pom->prawy = t;
-    t->rodzic = pom;
-  }
+
+  if (t->rodzic == NULL) DUPA = *pom;
+  else if (t == t->rodzic->prawy) t->rodzic->prawy = pom;
+  else t->rodzic->lewy = pom;
+  pom->prawy = t;
+  t->rodzic = pom;
 }
 
 void insert_repair (drzewo * t) {
-  if (t == t->korzen) return;
+  drzewo * wujek;
 
+  while (t->rodzic->kolor && t != nullptr) {
+    //cout << "AAA\n";
 
-  drzewo * dziadek = t->rodzic->rodzic;
-  drzewo * ojciec = t->rodzic;
+    if (t->rodzic == t->rodzic->rodzic->prawy) {
+      //cout << "uno\n";
+      wujek = t->rodzic->rodzic->lewy;
+      //cout << " mm\n";
+      if (wujek == nullptr) return;
 
-  if (ojciec->kolor == false) return;
+      if (wujek->kolor) {
+        //cout << "A\n";
+        wujek->kolor = false;
+        t->rodzic->kolor = false;
+        t->rodzic->rodzic->kolor = true;
 
-  if (ojciec == dziadek->lewy) {
-    drzewo * wujek = dziadek->prawy;
+        t = t->rodzic->rodzic;
+      }
+      else {
+        //cout << "B\n";
+        if (t == t->rodzic->lewy) {
+          t = t->rodzic;
 
-    if (wujek->kolor == true) {
-      dziadek->kolor = true;
-      wujek->kolor = false;
-      ojciec->kolor = false;
+          //cout << "TUTAJ\n";
 
-      insert_repair(dziadek);
+          prawa_rotacja(t);
+        }
+
+        t->rodzic->kolor = false;
+        t->rodzic->rodzic->kolor = true;
+        lewa_rotacja(t->rodzic->rodzic);
+      }
     }
     else {
-      if (wujek->kolor == false && t == ojciec->prawy) {
-        t = ojciec;
-        ojciec = t->rodzic;
-        dziadek = ojciec->rodzic;
-        if (dziadek->prawy == ojciec) wujek = dziadek->lewy;
-        else wujek = dziadek->prawy;
-        lewa_rotacja(t);
+      wujek = t->rodzic->rodzic->prawy;
+
+      if(wujek->kolor) {
+        wujek->kolor = false;
+        t->rodzic->kolor = false;
+        t->rodzic->rodzic->kolor = true;
+        
+        t = t->rodzic->rodzic;
       }
-      ojciec->kolor = false;
-      dziadek->kolor = true;
-      prawa_rotacja (dziadek);
+      else {
+        if (t == t->rodzic->prawy) {
+          t = t->rodzic;
+          //cout << "KURWAAA\n";
+          lewa_rotacja(t);
+        }
+
+        t->rodzic->kolor = false;
+        t->rodzic->rodzic->kolor = true;
+        prawa_rotacja(t->rodzic->rodzic);
+      }
     }
   }
-  else {
-    drzewo * wujek = dziadek->lewy;
-
-    if (wujek->kolor == true) {
-      dziadek->kolor = true;
-      wujek->kolor = false;
-      ojciec->kolor = false;
-
-      insert_repair(dziadek);
-    }
-    else {
-      if (wujek->kolor == false && t == ojciec->lewy) {
-        t = ojciec;
-        ojciec = t->rodzic;
-        dziadek = ojciec->rodzic;
-        if (dziadek->prawy == ojciec) wujek = dziadek->lewy;
-        else wujek = dziadek->prawy;
-        prawa_rotacja(t);
-      }
-      ojciec->kolor = false;
-      dziadek->kolor = true;
-      lewa_rotacja (dziadek);
-    }
-  }
+  DUPA.kolor = false;
 }
