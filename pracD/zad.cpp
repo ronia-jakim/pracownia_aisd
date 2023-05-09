@@ -292,6 +292,8 @@ string remove (ll x) {
 
   remove_tree(kubelek);
 
+  delete(kubelek);
+
   return "OK";
 }
 
