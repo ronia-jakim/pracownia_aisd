@@ -1,0 +1,133 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+
+#define ll long long
+
+using namespace std;
+
+const int MAX = 1069;
+const int CHUJ = 100069;
+
+int n, m;
+int wyspa [MAX][MAX]; // pierwsza wartosc to wysokosc, druga to wpsolrzedne rodzica?
+pair<int, int> KURWA_PIEPRZE_AISD[MAX][MAX];
+vector<pair<int, int>> gorki;
+
+int T;
+int zapytanka [CHUJ]; // to juz jest podane rosnaco
+int odpowiedzi [CHUJ];
+
+int ziemia;
+
+
+bool sortowanko(pair<int, int> a, pair<int, int> b);
+
+void socjalistyczna_republika (pair<int, int> a, pair<int, int> b);
+pair<int, int> cheka (pair<int, int> a);
+
+int main () {
+  ziemia = 0;
+
+  cin >> n >> m;
+
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      int pom;
+      cin >> pom;
+
+      pair<int, int> coord = make_pair(i, j);
+
+      wyspa[i][j] = pom;
+      KURWA_PIEPRZE_AISD[i][j] = coord;
+      gorki.push_back(coord);
+    }
+  }
+
+  sort(gorki.begin(), gorki.end(), sortowanko);
+
+  cin >> T;
+
+  for (int i = 0; i < T; i++) {
+    int pom;
+    cin >> pom;
+    zapytanka[i] = pom;
+  }
+
+  int najnizej = gorki.size() - 1;
+
+  for (int t = T-1; t >= 0; t--) {
+    int zalew = zapytanka[t];
+
+    pair<int, int> coord = gorki[najnizej];
+    int x = coord.first;
+    int y = coord.second;
+
+    while (wyspa[x][y] > zalew && najnizej >= 0) {
+      pair<int, int> p = KURWA_PIEPRZE_AISD[x][y];
+
+      ziemia++;
+
+      if (wyspa[x+1][y] > zalew) {
+        socjalistyczna_republika(make_pair(x+1, y), coord);
+      }
+      if (x > 0 && wyspa[x-1][y] > zalew) {
+        socjalistyczna_republika(make_pair(x-1, y), coord);
+      }
+      if (wyspa[x][y+1] > zalew) {
+        socjalistyczna_republika(make_pair(x, y+1), coord);
+      }
+      if (y > 0 && wyspa[x][y-1] > zalew) {
+        socjalistyczna_republika(make_pair(x, y-1), coord);
+      }
+
+      najnizej--;
+
+
+      coord = gorki[najnizej];
+      x = coord.first;
+      y = coord.second;
+    }
+
+    odpowiedzi[t] = ziemia;
+  }
+
+  for (int i = 0; i < T; i++) cout << odpowiedzi[i] << " ";
+
+  cout << "\n";
+
+  return 0;
+}
+
+bool sortowanko (pair<int, int> a, pair<int, int> b) {
+  int xa = a.first;
+  int ya = a.second;
+  int xb = b.first;
+  int yb = b.second;
+  if (wyspa[xa][ya] <= wyspa[xb][yb]) return true;
+  return false;
+}
+
+pair<int, int> cheka (pair<int, int> a) {
+  int x = a.first;
+  int y = a.second;
+
+  pair<int, int> p = KURWA_PIEPRZE_AISD[x][y];
+
+  if (x == p.first && y == p.second) return a;
+  return cheka(a);
+}
+
+void socjalistyczna_republika (pair<int, int> a, pair<int, int> b) {
+  a = cheka(a);
+  b = cheka(b);
+
+  int x = b.first;
+  int y = b.second;
+
+  if (a.first != x || a.second != y) {
+    ziemia--;
+
+    KURWA_PIEPRZE_AISD[x][y] = a;
+  }
+}
